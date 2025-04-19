@@ -16,7 +16,7 @@ class Test(Model):
     Schema={
         # "_id": "str",
         "abc": 'int',
-        "bcd": 'str'
+        "bcd": ('list', 'str')
     }
     Validations={
         # "_id": None,

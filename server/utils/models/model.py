@@ -55,7 +55,7 @@ class Model:
                         '''
                             data = type, kwargs[i] = validation
                         '''
-                        print(data, kwargs)
+                        # print(data, kwargs)
                         ret[i] = Type(data, kwargs[i])
                     if ret[i] == False:
                         raise Exception()
@@ -143,8 +143,10 @@ class Model:
                         else:
                             if type == 'dict':
                                 cls.__check_data(schema.value, allow_extra, **i)
-                            else:
+                            elif type == 'list':
                                 cls.__check_data(schema.value, allow_extra, *i)
+                            else:
+                                cls.__check_data(schema, allow_extra, *(i,))
                 except Exception as e:
                     raise Exception(e)
             def error(s1, s2):return "got type {}, expected {}".format(s1, s2)
@@ -154,25 +156,39 @@ class Model:
                 elif schema.type == 'list' and len(data) != 0:
                     __check_list(schema.value, data)
             elif type == 'Type':
-                if (type:=cls.__get_type(data[0])) != schema.type or not cls.__validate(data[0], schema.validation):
-                    raise Exception(error(type, schema.type))
+                for i in data:
+                    if (type:=cls.__get_type(i)) != schema.type:
+                        raise Exception(error(type, schema.type))
+                    if not cls.__validate(i, schema.validation):
+                        raise Exception("Validation for value '{}' failed.".format(i))
             else:
                 raise Exception("{} is not a valid type".format(type))
             return True
         except Exception as e:
             raise Exception(e)
+            
 
     @classmethod
-    def check_data(cls, data):
+    def check_data(cls, data: dict, allow_extra=False):
+        i:str = None
         try:
             if "_id" not in data.keys():
                 data["_id"]=ObjectId()
-            if cls.__check_data(cls.__Model_Schema, **data):
-                return data
-            else:
-                raise Exception()
+            schema_keys = list(cls.__Model_Schema.value.keys())
+            dic_keys = list(data.keys())
+            if len(schema_keys) > len(dic_keys):raise Exception("fields {} not present in data.".format([i for i in schema_keys if i not in dic_keys]))
+            if not allow_extra:
+                if len(schema_keys) < len(dic_keys):raise Exception("fields {} not present in schema.".format([i for i in dic_keys if i not in schema_keys]))
+            for i,j in data.items():
+                if (type:=cls.__Model_Schema.value[i].type) == 'dict':
+                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, **j)
+                elif type == 'list':
+                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *j)
+                else:
+                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *(j,))
+            return data
         except Exception as e:
-            print(e)
+            print(str(e)+(" In field: {}".format(i) if i is not None else ""))
             return False
 
     @classmethod

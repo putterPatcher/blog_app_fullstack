@@ -7,6 +7,3 @@ class Record:
             print("Please run Model_Class.generate().")
         self.__Model = Model
         self.__collection = collection
-    
-    def add_record(data):
-        pass
