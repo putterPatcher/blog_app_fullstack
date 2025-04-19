@@ -53,6 +53,7 @@ class Model:
                         '''
                             data = type, kwargs[i] = validation
                         '''
+                        print(data, kwargs)
                         ret[i] = Type(data, kwargs[i])
                     if ret[i] == False:
                         raise Exception()
@@ -97,7 +98,7 @@ class Model:
                     return NP_Type('list', data)
                 else:
                     '''
-                        schema = type, args = (validation)
+                        schema = (type), args = (validation)
                     '''
                     return Type(schema[0], args[0])
         except Exception as e:
@@ -107,6 +108,8 @@ class Model:
     @staticmethod
     def __validate(data, validation):
         try:
+            if validation:
+                return validation(data)
             return True
         except Exception as e:
             print(e)
@@ -123,10 +126,12 @@ class Model:
                     if not allow_extra:
                         if len(schema_keys) < len(dic_keys):raise Exception("fields {} not present in schema.".format([i for i in schema_keys if i not in dic_keys]))
                     for i in schema.keys():
-                        if cls.__get_type(dic[i]) == 'dic':
+                        if (type:=cls.__get_type(dic[i])) == 'dict':
                             cls.__check_data(schema[i], allow_extra, **dic[i])
-                        else:
+                        elif type == "list":
                             cls.__check_data(schema[i], allow_extra, *dic[i])
+                        else:
+                            cls.__check_data(schema[i], allow_extra, *(dic[i],))
                 except Exception as e:
                     raise Exception(e)
             def __check_list(schema, list: list[any]):
@@ -153,8 +158,7 @@ class Model:
                 raise Exception("{} is not a valid type".format(type))
             return True
         except Exception as e:
-            print(e)
-            return False
+            raise Exception(e)
 
     @classmethod
     def check_data(cls, data):
@@ -171,7 +175,7 @@ class Model:
         '''
         def __generate_schema_object(model_name: str, Schema: dict, Validations: dict):
             try:
-                if not Schema["_id"]:
+                if "_id" not in Schema.keys():
                     raise Exception("field '_id' is not present.")
                 type_dict = None
                 if type(Schema) == dict and type(Validations) == dict:
