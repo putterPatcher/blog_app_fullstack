@@ -1,4 +1,5 @@
 from utils.models.model import Model
+from utils.connect import collection
 
 class Blog(Model):
     '''
@@ -29,5 +30,7 @@ class Blog(Model):
         "deleted_at": None,
         "modified_at": None,
     }
+    blog=collection
+
 
 Blog.generate()
