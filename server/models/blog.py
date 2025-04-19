@@ -1,15 +1,33 @@
-from utils.models.get_functions import get_record_type, verify_data_type
+from utils.models.model import Model
 
-class Blog:
+class Blog(Model):
+    '''
+        name = name of model (capitalized)
+    '''
+    name = 'blog'
+    '''
+        Schema=dict[field_name, datatypes tuples]
+    '''
     Schema={
-        "heading": ('str',),
-        "image_urls": ('list', 'str'),
-        "content": ('str',),
+        "_id": 'str',
+        "heading": 'str',
+        "image_urls": ('list', {"name": 'str', "age": 'int'}),
+        "content": {"abc": 'int', "bcd": 'str'},
+        "created_at": 'str',
+        "deleted_at": 'str',
+        "modified_at": 'str',
+    }
+    '''
+        Validations=dict[field_name, validations tuple]
+    '''
+    Validations={
+        "_id": None,
+        "heading": None,
+        "image_urls": {"name": None, "age": None},
+        "content": {"abc": 'int', "bcd": 'str'},
+        "created_at": None,
+        "deleted_at": None,
+        "modified_at": None,
     }
 
-blogs = {}
-
-def verify_blog(record):
-    data_dict = get_record_type(record)
-    blogs["_id"] = data_dict
-    return verify_data_type(data_dict, **Blog.Schema)
+Blog.generate()

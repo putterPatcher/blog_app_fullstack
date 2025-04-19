@@ -1,5 +1,6 @@
 from utils.connect import app, collection, flask
 from paths import Paths
+from models import blog
 
 @app.route(Paths.blog, methods=["GET"])
 def getBlog(id):
