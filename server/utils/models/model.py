@@ -1,3 +1,5 @@
+from bson.objectid import ObjectId
+
 _Models = {}
 
 class Type:
@@ -124,7 +126,7 @@ class Model:
                     dic_keys = list(dic.keys())
                     if len(schema_keys) > len(dic_keys):raise Exception("fields {} not present in data.".format([i for i in schema_keys if i not in dic_keys]))
                     if not allow_extra:
-                        if len(schema_keys) < len(dic_keys):raise Exception("fields {} not present in schema.".format([i for i in schema_keys if i not in dic_keys]))
+                        if len(schema_keys) < len(dic_keys):raise Exception("fields {} not present in schema.".format([i for i in dic_keys if i not in schema_keys]))
                     for i in schema.keys():
                         if (type:=cls.__get_type(dic[i])) == 'dict':
                             cls.__check_data(schema[i], allow_extra, **dic[i])
@@ -163,7 +165,12 @@ class Model:
     @classmethod
     def check_data(cls, data):
         try:
-            return cls.__check_data(cls.__Model_Schema, **data)
+            if "_id" not in data.keys():
+                data["_id"]=ObjectId()
+            if cls.__check_data(cls.__Model_Schema, **data):
+                return data
+            else:
+                raise Exception()
         except Exception as e:
             print(e)
             return False
@@ -176,7 +183,9 @@ class Model:
         def __generate_schema_object(model_name: str, Schema: dict, Validations: dict):
             try:
                 if "_id" not in Schema.keys():
-                    raise Exception("field '_id' is not present.")
+                    # raise Exception("field '_id' is not present.")
+                    Schema["_id"]='ObjectId'
+                    Validations["_id"]=None
                 type_dict = None
                 if type(Schema) == dict and type(Validations) == dict:
                     type_dict = cls.__get_record_type(Schema, **Validations)

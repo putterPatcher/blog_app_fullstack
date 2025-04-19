@@ -14,12 +14,12 @@ def string(s):
 class Test(Model):
     name = 'test'
     Schema={
-        "_id": "str",
+        # "_id": "str",
         "abc": 'int',
         "bcd": 'str'
     }
     Validations={
-        "_id": None,
+        # "_id": None,
         "abc": num,
         "bcd": string
     }
