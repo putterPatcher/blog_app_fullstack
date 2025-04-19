@@ -240,4 +240,14 @@ class Model:
             print("],")
         else:
             print(str(schema)+",")
+    
+    @classmethod
+    def get_records(cls, allow_extra=False, *args):
+        try:return ret if False not in (ret:=[cls.__Model_Schema.check_data(i, allow_extra) for i in args]) else None;
+        except Exception as e:print(e);return None;
+    
+    @classmethod
+    def get_record(cls, data, allow_extra=False):
+        try:return ret if (ret:=cls.__Model_Schema.check_data(data, allow_extra)) != False else None;
+        except Exception as e:print(e);return None;
 
