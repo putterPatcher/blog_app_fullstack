@@ -4,4 +4,4 @@ from utils.connect import app
 from models import blog
 
 blog.Blog.print_schema()
-# print(blog.Blog.check_data({"asdfs": 'fds'}))
+print(blog.Blog.check_data({"asdfs": 'fds'}))

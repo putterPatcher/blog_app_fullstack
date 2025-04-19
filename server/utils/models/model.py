@@ -128,15 +128,18 @@ class Model:
                         else:
                             cls.__check_data(schema[i], allow_extra, *dic[i])
                 except Exception as e:
-                    return e
+                    raise Exception(e)
             def __check_list(schema, list: list[any]):
-                for i in list:
-                    if schema.type != (type:=cls.__get_type(i)):raise Exception(error(type, schema.type))
-                    else:
-                        if type == 'dict':
-                            cls.__check_data(schema.value, allow_extra, **i)
+                try:
+                    for i in list:
+                        if schema.type != (type:=cls.__get_type(i)):raise Exception(error(type, schema.type))
                         else:
-                            cls.__check_data(schema.value, allow_extra, *i)
+                            if type == 'dict':
+                                cls.__check_data(schema.value, allow_extra, **i)
+                            else:
+                                cls.__check_data(schema.value, allow_extra, *i)
+                except Exception as e:
+                    raise Exception(e)
             def error(s1, s2):return "got type {}, expected {}".format(s1, s2)
             if (type:=cls.__get_type(schema)) == 'NP_Type':
                 if schema.type == 'dict' and len(dict_data) != 0:
