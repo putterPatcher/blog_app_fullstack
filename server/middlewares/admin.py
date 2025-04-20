@@ -1,8 +1,7 @@
 from utils.connect import flask, app
 
-def verify_admin():
+def verify_admin(request: flask.Request) -> dict:
     try:
-        request = flask.request
         data = request.get_json()
         print(app.config["ADMIN_TOKEN"])
         if app.config["ADMIN_LOGGED_IN"] == True:
@@ -11,7 +10,7 @@ def verify_admin():
         else:
             raise Exception("Not logged in.")
         request.user = {"name": app.config["ADMIN_NAME"]}
-        return request
+        return None
     except Exception as err:
         return app.response_class(
             response=flask.json.dumps({"success": False, "message": "Invalid credientials", "error": str(err)}),

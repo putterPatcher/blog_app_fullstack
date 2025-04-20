@@ -34,9 +34,9 @@ def login(request: flask.Request):
             }
         )
 
-def logout(request: flask.Request):
+def logout(request: flask.Request, **kwargs):
     try:
-        print(flask.request.user, "???")
+        print(request.user)
         app.config.update(
             ADMIN_LOGGED_IN=False,
         )
