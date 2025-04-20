@@ -32,5 +32,4 @@ class Blog(Model):
     }
     blog=collection
 
-
 Blog.generate()
