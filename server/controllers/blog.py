@@ -1,9 +1,8 @@
 from utils.connect import app, collection, flask
-from paths import Paths
 from models import blog
 
-@app.route(Paths.blog, methods=["GET"])
-def getBlog(id):
+
+def getBlog(request: flask.Request, id):
     record = collection.find_one({"_id": id})
     if record:
         data = { "blog": record }

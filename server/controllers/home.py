@@ -1,9 +1,8 @@
 from utils.connect import app, collection, flask
+from flask import Request
 from paths import Paths
 
-
-@app.route(Paths.home, methods=["GET"])
-def getBlogs():
+def getBlogs(request: Request):
     records = collection.find({})
     data = { "blogs": records.to_list() }
     response = app.response_class(
