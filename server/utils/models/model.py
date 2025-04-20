@@ -170,6 +170,9 @@ class Model:
 
     @classmethod
     def check_data(cls, data: dict, allow_extra=False):
+        '''
+            data: dict of record
+        '''
         i:str = None
         try:
             if "_id" not in data.keys():
@@ -189,7 +192,7 @@ class Model:
             return data
         except Exception as e:
             print(str(e)+(" In field: {}".format(i) if i is not None else ""))
-            return False
+            return None
 
     @classmethod
     def generate(cls):
@@ -220,6 +223,9 @@ class Model:
     
     @classmethod
     def print_schema(cls, schema:NP_Type | Type=None, tab=0):
+        '''
+            Print the schema for model.
+        '''
         start = False
         if schema == None:schema = cls.__Model_Schema;start=True;
         if schema.type == 'dict':
@@ -242,12 +248,54 @@ class Model:
             print(str(schema)+",")
     
     @classmethod
-    def get_records(cls, allow_extra=False, *args):
-        try:return ret if False not in (ret:=[cls.check_data(i, allow_extra) for i in args]) else None;
+    def compare_records(cls, *records: dict, allow_extra=False):
+        '''
+            *records: dicts of records
+
+            allow_extra: allow extra fields.
+        '''
+        try:return [cls.check_data(i, allow_extra) for i in records];
         except Exception as e:print(e);return None;
     
     @classmethod
-    def get_record(cls, data, allow_extra=False):
-        try:return ret if (ret:=cls.check_data(data, allow_extra)) != False else None;
+    def compare_record(cls, data: dict, allow_extra=False):
+        '''
+            data: dict of record
+
+            allow_extra: allow extra fields.
+        '''
+        try:return cls.check_data(data, allow_extra);
         except Exception as e:print(e);return None;
+
+    @classmethod
+    def update_record(cls, fields: dict, data: dict, allow_extra=False):
+        '''
+            fields: dict of updated field data
+
+            records: dict of record
+
+            allow_extra: allow extra fields.
+        '''
+        try:
+            for i, j in fields.keys():data[i] = j;
+            return cls.check_data(data, allow_extra);
+        except Exception as e:print(e);return None;
+
+    @classmethod
+    def update_records(cls, fields: dict, *data: dict, allow_extra=False):
+        '''
+            fields: dict of updated field data
+
+            *records: dicts of records
+
+            allow_extra: allow extra fields.
+        '''
+        try:
+            for i in data:
+                for j, k in fields.keys():i[j] = k;
+            return [cls.check_data(i, allow_extra) for i in data];
+        except Exception as e:print(e);return None;
+
+
+
 
