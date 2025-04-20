@@ -11,6 +11,7 @@ def verify_admin():
         else:
             raise Exception("Not logged in.")
         request.user = {"name": app.config["ADMIN_NAME"]}
+        return request
     except Exception as err:
         return app.response_class(
             response=flask.json.dumps({"success": False, "message": "Invalid credientials", "error": str(err)}),
