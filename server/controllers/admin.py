@@ -2,6 +2,7 @@ from utils.connect import app, flask, collection
 from uuid import uuid4
 from paths import AdminPaths
 from middlewares.admin import verify_admin
+from utils.functions import run_middlewares
 
 @app.route(AdminPaths.login, methods=["POST"])
 def login():
@@ -40,8 +41,9 @@ def login():
 @app.route(AdminPaths.logout, methods=["POST"])
 def logout():
     try:
-        if res:=verify_admin():
+        if res:=run_middlewares(verify_admin()):
             return res
+        print(flask.request.user, "???")
         app.config.update(
             ADMIN_LOGGED_IN=False,
         )
@@ -62,9 +64,9 @@ def logout():
         )
 
 @app.route(AdminPaths.add_blog, methods=["POST"])
-
 def addBlog():
-    verify_admin()
+    if res:=run_middlewares(verify_admin()):
+        return res
     request = flask.request
     data = request.get_json()
     collection.insert_one(data)
