@@ -5,7 +5,7 @@ __Error_Response = None
 
 def setErrorResponse(response):__Error_Response = response;
 
-def process_request(request: Request, controller, *middlewares, **kwargs):
+def get_response(request: Request, controller, *middlewares, **kwargs):
     try:
         def __run_middlewares(request: Request, *middlewares, **kwargs):
             try:
