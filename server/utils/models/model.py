@@ -182,13 +182,13 @@ class Model:
             if len(schema_keys) > len(dic_keys):raise Exception("fields {} not present in data.".format([i for i in schema_keys if i not in dic_keys]))
             if not allow_extra:
                 if len(schema_keys) < len(dic_keys):raise Exception("fields {} not present in schema.".format([i for i in dic_keys if i not in schema_keys]))
-            for i,j in data.items():
+            for i in cls.__Model_Schema.value.keys():
                 if (type:=cls.__Model_Schema.value[i].type) == 'dict':
-                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, **j)
+                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, **data[i])
                 elif type == 'list':
-                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *j)
+                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *data[i])
                 else:
-                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *(j,))
+                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *(data[i],))
             return data
         except Exception as e:
             print(str(e)+(" In field: {}".format(i) if i is not None else ""))
@@ -248,13 +248,25 @@ class Model:
             print(str(schema)+",")
     
     @classmethod
+    def __add_defaults(cls, data: dict):
+        try:
+            key_list = [i for i in cls.Default.keys() if i not in list(data.keys())]
+            for i in key_list:
+                data[i] = cls.Default[i]();
+            return data
+        except Exception as e:
+            print(e)
+            return None
+
+    @classmethod
     def compare_records(cls, *records: dict, allow_extra=False):
         '''
             *records: dicts of records
 
             allow_extra: allow extra fields.
         '''
-        try:return [cls.check_data(i, allow_extra) for i in records];
+        try:
+            return [cls.check_data(cls.__add_defaults(i), allow_extra) for i in records];
         except Exception as e:print(e);return None;
     
     @classmethod
@@ -264,7 +276,7 @@ class Model:
 
             allow_extra: allow extra fields.
         '''
-        try:return cls.check_data(data, allow_extra);
+        try:return cls.check_data(cls.__add_defaults(data), allow_extra);
         except Exception as e:print(e);return None;
 
     @classmethod
@@ -278,7 +290,7 @@ class Model:
         '''
         try:
             for i, j in fields.keys():data[i] = j;
-            return cls.check_data(data, allow_extra);
+            return cls.check_data(cls.__add_defaults(data), allow_extra);
         except Exception as e:print(e);return None;
 
     @classmethod
@@ -293,7 +305,7 @@ class Model:
         try:
             for i in data:
                 for j, k in fields.keys():i[j] = k;
-            return [cls.check_data(i, allow_extra) for i in data];
+            return [cls.check_data(cls.__add_defaults(i), allow_extra) for i in data];
         except Exception as e:print(e);return None;
 
 

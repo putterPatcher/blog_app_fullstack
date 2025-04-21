@@ -23,5 +23,10 @@ class Test(Model):
         "abc": num,
         "bcd": string
     }
+    Default={
+        "abc":lambda:25,
+        "bcd":lambda:"Shantanu",
+        "extra":lambda:"Kor"
+    }
 
 Test.generate()

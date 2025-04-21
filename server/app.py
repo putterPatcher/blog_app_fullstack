@@ -1,6 +1,7 @@
 from routes import admin, blog, home
 from utils.connect import app, flask
 from utils.functions import setErrorResponse
+from models.test import Test
 
 setErrorResponse(
     app.response_class(
@@ -11,3 +12,5 @@ setErrorResponse(
         }
     )
 )
+
+print(Test.compare_record({"abc": 5}, allow_extra=True))
