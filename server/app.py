@@ -13,4 +13,4 @@ setErrorResponse(
     )
 )
 
-print(Test.compare_record({"abc": 5}, allow_extra=True))
+print(Test.compare_record({"abc": 5, 'acd': {"abc": "sdfdgb"}}, allow_extra=True))

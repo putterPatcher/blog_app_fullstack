@@ -13,19 +13,31 @@ def string(s):
 
 class Test(Model):
     name = 'test'
+    '''
+        use {} with fields for dict,
+        use ('list', type) for list with type
+        use 'type' for type
+    '''
     Schema={
         # "_id": "str",
         "abc": 'int',
-        "bcd": ('list', 'str')
+        "bcd": ('list', 'str'),
+        "acd": {"abc": 'str'}
     }
+    '''
+        validations for schema: function that returns True or False.
+    '''
     Validations={
         # "_id": None,
         "abc": num,
         "bcd": string
     }
+    '''
+        default fields: use function that returns value qas value for the field key.
+    '''
     Default={
         "abc":lambda:25,
-        "bcd":lambda:"Shantanu",
+        "bcd":lambda:["Shantanu"],
         "extra":lambda:"Kor"
     }
 

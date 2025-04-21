@@ -35,7 +35,11 @@ class Model:
         try:
             if (type:=cls.__get_type(schema)) == 'dict':
                 ret = {}
+                kwargs_keys = kwargs.keys()
                 for i in schema.keys():
+                    if i not in kwargs_keys:
+                        kwargs[i] = None
+                        print("validation for '{}' field does not exist.".format(i))
                     if (type:=cls.__get_type(data:=schema[i])) == 'tuple':
                         '''
                             data = (type), kwargs[i] = validation
@@ -43,13 +47,12 @@ class Model:
                             data = ('list', dict), kwargs[i] = dict
                             data = ('list', tuple), kwargs[i] = with something
                         '''
-                        if i not in kwargs.keys():
-                            raise Exception("validation for '{}' field does not exist.".format(i))
                         ret[i] = cls.__get_record_type(data, *(kwargs[i],))
                     elif type == 'dict':
                         '''
                             data = dict, kwargs[i] = dict
                         '''
+                        if kwargs[i] == None:kwargs[i] = {}
                         ret[i] = cls.__get_record_type(data, **kwargs[i])
                     else:
                         '''
@@ -84,16 +87,19 @@ class Model:
                                 '''
                                     data[1] = type, args = (validation)
                                 '''
+                                if len(args) == 0:args = (None,)
                                 data = Type(data[1], args[0])
                         else:
                             '''
                                 data = (type), args = (validation)
                             '''
+                            if len(args) == 0:args = (None,)
                             data = cls.__get_record_type(data, *args)
                     else:
                         '''
                             data = type args = (validation)
                         '''
+                        if len(args) == 0:args = (None,)
                         data = Type(data, args[0])
                     if data == False:
                         raise Exception()
@@ -102,6 +108,7 @@ class Model:
                     '''
                         schema = (type), args = (validation)
                     '''
+                    if len(args) == 0:args = (None,)
                     return Type(schema[0], args[0])
         except Exception as e:
             print(e)
@@ -155,6 +162,8 @@ class Model:
                     __check_dict(schema.value, dict_data)
                 elif schema.type == 'list' and len(data) != 0:
                     __check_list(schema.value, data)
+                else:
+                    raise Exception(error('different', 'dict or list'))
             elif type == 'Type':
                 for i in data:
                     if (type:=cls.__get_type(i)) != schema.type:
@@ -184,14 +193,25 @@ class Model:
                 if len(schema_keys) < len(dic_keys):raise Exception("fields {} not present in schema.".format([i for i in dic_keys if i not in schema_keys]))
             for i in cls.__Model_Schema.value.keys():
                 if (type:=cls.__Model_Schema.value[i].type) == 'dict':
-                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, **data[i])
+                    try:
+                        if cls.__get_type(data[i]) != 'dict':
+                            raise Exception("dict type expected")
+                        cls.__check_data(cls.__Model_Schema.value[i], allow_extra, **data[i])
+                    except:
+                        raise Exception("got type {}, expected dict".format(cls.__get_type(data[i])))
                 elif type == 'list':
-                    cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *data[i])
+                    try:
+                        if cls.__get_type(data[i]) != 'list':
+                            raise Exception("list type expected")
+                        cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *data[i])
+                    except:
+                        raise Exception("got type {}, expected list".format(cls.__get_type(data[i])))
                 else:
                     cls.__check_data(cls.__Model_Schema.value[i], allow_extra, *(data[i],))
             return data
         except Exception as e:
-            print(str(e)+(" In field: {}".format(i) if i is not None else ""))
+            print(str(e)+(" In field: {}\n{} FIELD's SCHEMA:".format(i, i) if i is not None else ""))
+            cls.print_schema(cls.__Model_Schema.value[i])
             return None
 
     @classmethod
