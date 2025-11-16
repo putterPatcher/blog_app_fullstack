@@ -1,4 +1,4 @@
-from utils.models.model import Model
+from nosql_schema_check.model import Model
 from utils.connect import collection
 
 class Blog(Model):
@@ -10,7 +10,6 @@ class Blog(Model):
         Schema=dict[field_name, datatypes tuples]
     '''
     Schema={
-        "_id": 'str',
         "heading": 'str',
         "image_urls": ('list', {"name": 'str', "age": 'int'}),
         "content": {"abc": 'int', "bcd": 'str'},
@@ -18,18 +17,10 @@ class Blog(Model):
         "deleted_at": 'str',
         "modified_at": 'str',
     }
-    '''
-        Validations=dict[field_name, validations tuple]
-    '''
     Validations={
-        "_id": None,
-        "heading": None,
-        "image_urls": {"name": None, "age": None},
-        "content": {"abc": 'int', "bcd": 'str'},
-        "created_at": None,
-        "deleted_at": None,
-        "modified_at": None,
+        "content": {"abc":lambda i:i < 10, "bcd":lambda s:len(s) < 10},
     }
+    Required=["heading", "image_urls", "content", "created_at", "modified_at"]
     blog=collection
 
 Blog.generate()

@@ -1,6 +1,8 @@
 from utils.connect import app, flask
 from paths import HomePaths
-from controllers import home
+from controllers.home import *
 
-@app.route(HomePaths.get_blogs, methods=["GET"])
-def get_blogs():return home.getBlogs(flask.request)
+home_blueprint = flask.Blueprint('home_blueprint', __name__)
+
+@home_blueprint.route(HomePaths.get_blogs, methods=["GET"])
+def get_blogs():return getBlogs(flask.request)

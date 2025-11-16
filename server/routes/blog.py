@@ -1,7 +1,9 @@
 from utils.connect import app, flask
-from controllers import blog
+from controllers.blog import *
 from paths import BlogPaths
 
-@app.route(BlogPaths.get_blog, methods=["GET"])
-def get_blog():return blog.getBlog(flask.request, id=id)
+blog_blueprint = flask.Blueprint('blog_blueprint', __name__)
+
+@blog_blueprint.route(BlogPaths.get_blog, methods=["GET"])
+def get_blog(id):return getBlog(flask.request, id=id)
 

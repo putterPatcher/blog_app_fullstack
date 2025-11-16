@@ -1,4 +1,4 @@
-from utils.models.model import Model
+from nosql_schema_check.model import Model
 
 def num(n):
     if n < 10:
